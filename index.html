@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#111322">
+  <meta name="description" content="Crie, organize e ilustre suas fanfics de anime com ajuda de IA: texto, mangá e imagens coloridas.">
+  <title>Anime Fanfic Studio</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Anime Fanfic Studio, início">
+        <span class="brand-mark" aria-hidden="true">✦</span>
+        <span><strong>Anime Fanfic</strong><small>STUDIO</small></span>
+      </a>
+      <div class="topbar-right"><span class="topbar-note">Seu universo, suas histórias</span><button class="button button-secondary small-button" id="tutorialBtn" type="button">Como usar</button></div>
+    </header>
+
+    <main class="workspace">
+      <section class="welcome-row" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">ESCRITA CRIATIVA COM IA</p>
+          <h1 id="page-title">Dê vida à sua próxima história.</h1>
+          <p class="welcome-copy">Planeje ideias, escreva capítulos, crie mangá e ilustrações coloridas, e salve, baixe ou imprima tudo.</p>
+        </div>
+        <button class="button button-secondary new-button" id="newFanficBtn" type="button"><span aria-hidden="true">＋</span> Nova fanfic</button>
+      </section>
+
+      <section class="metadata-card" aria-label="Dados da fanfic">
+        <label class="field">
+          <span>Anime ou universo</span>
+          <input type="text" id="anime" placeholder="Ex.: Naruto, One Piece…" autocomplete="off">
+        </label>
+        <label class="field">
+          <span>Título da fanfic</span>
+          <input type="text" id="fanficName" placeholder="Dê um nome à sua história" autocomplete="off">
+        </label>
+        <details class="notes-details">
+          <summary>Personagens, mundo e anotações <small>(a IA usa isso como referência nos textos e nas imagens)</small></summary>
+          <textarea id="notes" rows="5" placeholder="Ex.: Aya — 17 anos, cabelos prateados, olhos violeta, espadachim calada. Kai — rival, jaqueta vermelha, sorriso confiante…"></textarea>
+        </details>
+      </section>
+
+      <div class="layout">
+        <aside class="library-card" id="fanficList" aria-labelledby="library-title">
+          <div class="section-heading">
+            <div><p class="eyebrow">BIBLIOTECA</p><h2 id="library-title">Minhas fanfics</h2></div>
+            <span class="count-badge" id="storyCount">0</span>
+          </div>
+          <label class="sr-only" for="search">Buscar fanfics</label>
+          <input id="search" class="search-input" type="search" placeholder="Buscar na biblioteca…" autocomplete="off">
+          <div id="stories" class="stories-list"></div>
+          <p class="library-hint">Suas histórias e imagens ficam salvas neste dispositivo.</p>
+          <div class="library-actions">
+            <button class="button button-quiet" id="exportBackupBtn" type="button">Exportar backup</button>
+            <label class="button button-quiet file-button">Importar backup<input id="importBackupInput" type="file" accept=".json,application/json" hidden></label>
+          </div>
+        </aside>
+
+        <section class="editor-area" aria-label="Editor de fanfic">
+          <div class="editor-card">
+            <div class="editor-heading">
+              <div><p class="eyebrow">ÁREA DE CRIAÇÃO</p><h2>Seu capítulo</h2></div>
+              <span id="saveStatus" class="save-status" role="status">Não salvo</span>
+            </div>
+            <div class="chapter-bar">
+              <div id="chapterTabs" class="chapter-tabs" role="tablist" aria-label="Capítulos"></div>
+              <button class="button button-quiet small-button" id="addChapterBtn" type="button">＋ Capítulo</button>
+            </div>
+            <div class="editor-tools">
+              <button class="chip-button" id="undoBtn" type="button" title="Desfazer a última alteração feita pela IA ou por ferramentas">↶ Desfazer</button>
+              <button class="chip-button" id="renameChapterBtn" type="button">Renomear capítulo</button>
+              <button class="chip-button" id="deleteChapterBtn" type="button">Excluir capítulo</button>
+              <span class="tools-spacer"></span>
+              <button class="chip-button" id="fontDownBtn" type="button" aria-label="Diminuir letra">A−</button>
+              <button class="chip-button" id="fontUpBtn" type="button" aria-label="Aumentar letra">A+</button>
+              <button class="chip-button" id="focusBtn" type="button" aria-pressed="false">Modo foco</button>
+            </div>
+            <label class="sr-only" for="story">Texto da fanfic</label>
+            <textarea id="story" spellcheck="true" placeholder="Comece com uma cena, uma fala marcante ou uma ideia. Sua história começa aqui…"></textarea>
+            <div class="editor-footer">
+              <span id="wordCount">0 palavras</span>
+              <span id="readTime">Leitura: 0 min</span>
+              <span>Selecione um trecho para a IA editar só ele</span>
+            </div>
+          </div>
+
+          <section class="assistant-card" aria-labelledby="assistant-title">
+            <div class="section-heading assistant-heading">
+              <div><p class="eyebrow">SEU PARCEIRO DE ESCRITA</p><h2 id="assistant-title">Ferramentas criativas</h2></div>
+              <span class="ai-indicator"><span></span> IA pronta</span>
+            </div>
+            <div class="assistant-controls three">
+              <label class="field">
+                <span>O que vamos criar?</span>
+                <select id="writingTool">
+                  <optgroup label="Escrever">
+                    <option value="continue">Continuar a história</option>
+                    <option value="scene">Escrever uma cena</option>
+                    <option value="dialogue">Criar um diálogo</option>
+                    <option value="character">Criar um personagem</option>
+                  </optgroup>
+                  <optgroup label="Planejar e ter ideias">
+                    <option value="idea">Ideias de enredo (3 caminhos)</option>
+                    <option value="outline">Plano de capítulos</option>
+                    <option value="synopsis">Sinopse</option>
+                    <option value="title">Sugestões de título</option>
+                    <option value="world">Ambientação e mundo</option>
+                    <option value="twist">Reviravoltas</option>
+                  </optgroup>
+                  <optgroup label="Editar (usa o trecho selecionado)">
+                    <option value="revise">Revisar e melhorar</option>
+                    <option value="expand">Expandir com mais detalhes</option>
+                    <option value="shorten">Resumir / encurtar</option>
+                    <option value="tone">Mudar o tom</option>
+                  </optgroup>
+                  <optgroup label="Mangá">
+                    <option value="mangascript">Roteiro de mangá em quadros</option>
+                  </optgroup>
+                </select>
+              </label>
+              <label class="field">
+                <span>Gênero</span>
+                <select id="genre">
+                  <option value="">Livre</option><option>Aventura</option><option>Ação</option><option>Romance</option><option>Comédia</option><option>Drama</option><option>Mistério</option><option>Fantasia</option><option>Ficção científica</option><option>Terror</option><option>Slice of life</option><option>Esporte</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Tamanho</span>
+                <select id="length">
+                  <option value="curto (cerca de 150 palavras)">Curto</option>
+                  <option value="médio (cerca de 400 palavras)" selected>Médio</option>
+                  <option value="longo (cerca de 900 palavras)">Longo</option>
+                </select>
+              </label>
+            </div>
+            <label class="field direction-field">
+              <span>Direção criativa <small>(opcional)</small></span>
+              <input id="creativeDirection" type="text" placeholder="Ex.: clima de mistério, rivalidade, final emocionante…">
+            </label>
+            <div class="chips" id="directionChips" aria-label="Atalhos de direção criativa"></div>
+            <div class="action-row">
+              <button class="button button-primary" id="generateBtn" type="button"><span aria-hidden="true">✦</span> Gerar com IA</button>
+              <button class="button button-secondary" id="randomBtn" type="button" title="Sorteia uma premissa sem usar IA"><span aria-hidden="true">🎲</span> Sortear premissa</button>
+            </div>
+            <p class="privacy-note">A geração de texto e imagem é feita pelo Puter. Pode ser necessário entrar na sua conta. Para usar a IA, abra por http(s) (GitHub Pages ou Live Server).</p>
+          </section>
+
+          <section class="result-card" id="resultCard" aria-labelledby="resultTitle" hidden>
+            <div class="result-heading"><h2 id="resultTitle">Sugestão da IA</h2></div>
+            <div id="result" class="result-content" aria-live="polite" aria-busy="false"></div>
+            <div class="result-actions">
+              <button class="button button-primary small-button" id="insertResultBtn" type="button">Adicionar ao capítulo</button>
+              <button class="button button-secondary small-button" id="replaceResultBtn" type="button" hidden>Substituir o trecho</button>
+              <button class="button button-quiet small-button" id="copyResultBtn" type="button">Copiar sugestão</button>
+              <button class="button button-quiet small-button" id="regenBtn" type="button">Gerar de novo</button>
+              <button class="button button-quiet small-button" id="discardBtn" type="button">Descartar</button>
+            </div>
+          </section>
+
+          <section class="assistant-card image-studio" aria-labelledby="image-studio-title">
+            <div class="section-heading assistant-heading">
+              <div><p class="eyebrow">ILUSTRAÇÃO E MANGÁ</p><h2 id="image-studio-title">Estúdio de imagem</h2></div>
+            </div>
+            <div class="assistant-controls three">
+              <label class="field"><span>Formato</span>
+                <select id="imageMode">
+                  <option value="illustration">Ilustração da cena</option>
+                  <option value="cover">Capa da fanfic (vertical)</option>
+                  <option value="manga">Página de mangá (quadrinhos)</option>
+                  <option value="strip">Tira de mangá (horizontal)</option>
+                </select>
+              </label>
+              <label class="field"><span>Cores</span>
+                <select id="colorMode">
+                  <option value="color">Colorido</option>
+                  <option value="bw">Preto e branco clássico (mangá)</option>
+                </select>
+              </label>
+              <label class="field"><span>Estilo artístico</span>
+                <select id="artStyle">
+                  <option value="anime">Anime moderno</option>
+                  <option value="classic">Anime clássico anos 90</option>
+                  <option value="shonen">Mangá shounen (ação)</option>
+                  <option value="shoujo">Mangá shoujo (delicado)</option>
+                  <option value="watercolor">Aquarela</option>
+                  <option value="chibi">Chibi fofo</option>
+                  <option value="cinematic">Cinematográfico</option>
+                  <option value="cyber">Cyberpunk neon</option>
+                  <option value="dark">Sombrio e atmosférico</option>
+                </select>
+              </label>
+            </div>
+            <label class="field direction-field">
+              <span>Cena para desenhar <small>(opcional: se vazio, usa o trecho selecionado ou o fim do capítulo)</small></span>
+              <input id="imageScene" type="text" placeholder="Ex.: Aya enfrenta Kai no telhado, sob a chuva, ao anoitecer">
+            </label>
+            <p class="mode-hint" id="modeHint"></p>
+            <div class="action-row"><button class="button button-image" id="generateImageBtn" type="button"><span aria-hidden="true">▧</span> Gerar imagem</button></div>
+
+            <div id="imageCard" hidden>
+              <div class="result-heading image-heading"><h3 id="imageTitle">Imagem da sua fanfic</h3><a id="downloadImage" class="button button-secondary download-button" download="ilustracao-fanfic.png">Baixar imagem</a></div>
+              <div class="image-preview" id="imagePreview" aria-live="polite" aria-busy="false"></div>
+            </div>
+            <div id="galleryWrap" hidden>
+              <h3 class="gallery-title">Galeria desta fanfic</h3>
+              <div id="gallery" class="gallery"></div>
+            </div>
+          </section>
+
+          <section class="assistant-card" aria-labelledby="export-title">
+            <div class="section-heading assistant-heading"><div><p class="eyebrow">FINALIZAR</p><h2 id="export-title">Salvar, baixar e imprimir</h2></div></div>
+            <div class="action-row">
+              <button class="button button-primary" id="saveBtn" type="button">Salvar</button>
+              <button class="button button-quiet" id="downloadTextBtn" type="button">Baixar .txt</button>
+              <button class="button button-quiet" id="downloadHtmlBtn" type="button">Baixar .html (com imagens)</button>
+              <button class="button button-quiet" id="copyTextBtn" type="button">Copiar texto</button>
+              <button class="button button-secondary" id="printTextBtn" type="button">Imprimir fanfic</button>
+              <button class="button button-secondary" id="printAllBtn" type="button">Imprimir com imagens</button>
+            </div>
+            <p class="privacy-note">Na janela de impressão, escolha “Salvar como PDF” para gerar um PDF.</p>
+          </section>
+
+          <div class="bottom-actions"><button class="text-button danger-button" id="clearBtn" type="button">Limpar capítulo atual</button></div>
+        </section>
+      </div>
+    </main>
+    <footer class="app-footer"> <!-- Início do Rodapé da página -->
+                  <p style="text-align: center;">
+                  <a href="https://antoniopsj1-alt.github.io/Portfolio-AntonioJunior/" target="_blank" style="text-decoration: none; color: inherit;">
+                   &copy; 2026 Antônio Pereira de Souza Junior.
+                  </a>
+                  </p>
+			<p style="text-align: center;">Todos os direitos reservados.</p>
+      <address style="text-align: center; color: blue; font-weight: bold;">
+			 Contato: <a href="mailto:antoniopsj1@gmail.com">antoniopsj1@gmail.com</a>
+			</address> 
+		</footer> <!-- Fim do Rodapé -->
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </div>
+  <dialog id="tutorial" class="tutorial" aria-labelledby="tutorialTitle">
+    <h2 id="tutorialTitle">Como usar o Anime Fanfic Studio</h2>
+    <details open><summary>Começar uma fanfic</summary><ol>
+      <li>Toque em <b>Nova fanfic</b>, escreva o <b>anime ou universo</b> e o <b>título</b>.</li>
+      <li>Em <b>Personagens, mundo e anotações</b>, descreva os personagens (aparência, personalidade). A IA usa isso para manter tudo coerente nos textos e nas imagens.</li>
+      <li>Escreva no editor ou peça ajuda à IA. O app salva sozinho depois que a fanfic é salva a primeira vez (botão <b>Salvar</b> ou Ctrl+S).</li></ol></details>
+    <details><summary>Escrever e ter ideias com a IA</summary><ol>
+      <li>Em <b>Ferramentas criativas</b>, escolha o que criar: continuar, cena, diálogo, personagem, plano de capítulos, sinopse, títulos, reviravoltas ou roteiro de mangá.</li>
+      <li>Ajuste <b>Gênero</b>, <b>Tamanho</b> e a <b>Direção criativa</b> (use os atalhos, como Mistério ou Romance). Sem ideia? Use <b>🎲 Sortear premissa</b>.</li>
+      <li>Toque em <b>Gerar com IA</b>. O resultado aparece na caixa de sugestão.</li>
+      <li>Use <b>Adicionar ao capítulo</b>, <b>Copiar sugestão</b>, <b>Gerar de novo</b> ou <b>Descartar</b>.</li></ol></details>
+    <details><summary>Alterar o texto</summary><ul>
+      <li><b>Editar um trecho:</b> selecione o trecho no editor, escolha Revisar, Expandir, Resumir ou Mudar o tom e gere. Depois use <b>Substituir o trecho</b>.</li>
+      <li><b>Desfazer:</b> o botão ↶ volta a última alteração feita pela IA ou por Limpar.</li>
+      <li><b>Capítulos:</b> use <b>＋ Capítulo</b>, <b>Renomear</b> e <b>Excluir capítulo</b>. A IA lê o final do capítulo anterior.</li>
+      <li><b>Conforto:</b> A− e A+ mudam o tamanho da letra e <b>Modo foco</b> deixa só o editor.</li></ul></details>
+    <details><summary>Ilustração e mangá (colorido ou preto e branco)</summary><ol>
+      <li>No <b>Estúdio de imagem</b>, escolha o <b>formato</b>: ilustração, capa, página de mangá ou tira de mangá.</li>
+      <li>Escolha <b>Colorido</b> ou <b>Preto e branco clássico</b> e o <b>estilo artístico</b>.</li>
+      <li>Descreva a cena em <b>Cena para desenhar</b>. Se deixar vazio, o app usa o trecho selecionado ou o fim do capítulo.</li>
+      <li>Toque em <b>Gerar imagem</b>. Ela vai para a <b>galeria</b> da fanfic, onde dá para ampliar, baixar, imprimir ou excluir.</li>
+      <li>Se a aparência dos personagens mudar entre imagens, detalhe-os melhor nas anotações.</li></ol></details>
+    <details><summary>Salvar, baixar e imprimir</summary><ul>
+      <li><b>Baixar .txt</b> (só texto) ou <b>.html</b> (texto com as imagens, abre em qualquer navegador).</li>
+      <li><b>Imprimir fanfic</b> ou <b>Imprimir com imagens</b>. Na janela de impressão, escolha “Salvar como PDF” para gerar um PDF.</li>
+      <li>Na biblioteca: busque, <b>duplique</b> (⧉) ou exclua (×) fanfics.</li></ul></details>
+    <details><summary>Backup e instalação</summary><ul>
+      <li>Tudo fica salvo <b>neste navegador</b>. Use <b>Exportar backup</b> de vez em quando e <b>Importar backup</b> em outro aparelho.</li>
+      <li>Mantenha <b>index.html</b>, <b>style.css</b> e <b>app.js</b> na mesma pasta.</li>
+      <li>A IA do Puter só funciona abrindo por <b>http(s)</b>: GitHub Pages ou Live Server. Pode ser preciso entrar na conta do Puter.</li>
+      <li>Abrir direto da pasta (file://) permite escrever, salvar e imprimir, mas sem a IA. Cada forma de abrir tem seu próprio cadastro, então use sempre a mesma.</li></ul></details>
+    <div class="result-actions"><button class="button button-primary small-button" id="tutorialClose" type="button">Entendi</button></div>
+  </dialog>
+  <div id="printArea" aria-hidden="true"></div>
+  <script src="app.js"></script>
+</body>
+</html>
